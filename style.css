@@ -1,0 +1,76 @@
+@import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css");
+body {
+  font-family: "Lato", sans-serif;
+}
+
+.sidenav {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #005585;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+.logoo img {
+  width: 30%;
+  height: 66px;
+  margin-top: -4%;
+  margin-left: 10px;
+}
+.video {
+  height: 280px !important;
+  margin-left: 27%;
+}
+
+.thambnail {
+  height: 120px !important;
+  margin-left: 30%;
+}
+
+
+
+.sidenav a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: white;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+.avatar {
+  vertical-align: middle;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+.profile-img img {
+  margin-right: 15px;
+}
+.profile-img button {
+  margin-right: 15px;
+}
+
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {
+    padding-top: 15px;
+  }
+  .sidenav a {
+    font-size: 18px;
+  }
+}
