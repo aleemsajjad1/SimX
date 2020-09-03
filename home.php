@@ -1,7 +1,8 @@
 <?php 
 session_start();
-// echo $_GET['username'];
 $_SESSION["username"] = $_GET['username'];
 
-header("location:index.php");
+// $_SESSION["username"] = "m_vemaNXEkjkjh";
+
+header("Location:index.php");
 ?>

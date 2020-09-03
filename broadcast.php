@@ -1,13 +1,23 @@
+<?php 
+
+session_start();
+if(!isset($_SESSION["username"])){
+  header("Location:logout.php"); 
+}
+
+?>
+
+<!DOCTYPE html>
 <html>
 
 <head>
-
     <title>SimX</title>
     <link rel="stylesheet" href="style.css" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="css/bootstrap.min.css" />
     <link href="https://vjs.zencdn.net/7.8.4/video-js.css" rel="stylesheet" />
+
 
     <style>
     @import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css");
@@ -18,7 +28,6 @@
 <body>
 
     <?php 
-  session_start();
 
   $conn = new mysqli("localhost", "root", "", "simx");
     if ($conn->connect_error) {
@@ -49,7 +58,7 @@ if ($result->num_rows > 0) {
             <span style="font-size: 30px; cursor: pointer;" onclick="openNav()"
               >&#9776;</span
             >
-            <img src="simx.png" />
+            <a href="index.php"><img src="simx.png" /></a>
           </div>
         </div>
         <div class="col-lg-5 pt-2">
@@ -77,13 +86,14 @@ if ($result->num_rows > 0) {
             alt="Avatar"
             class="avatar"
           />
-          <button
+          <a
             style="background-color: #005585;"
             type="button"
             class="btn btn-info"
+            href="logout.php"
           >
             LogOut
-          </button>
+          </a>
         </div>
       </div>
     </div>
@@ -107,61 +117,112 @@ if ($result->num_rows > 0) {
       die("Connection failed: " . $conn->connect_error);
     }
     $broadcastId = $_GET['id'];
-    // $sql = "SELECT * FROM `broadcasts` WHERE  broadcast = '$broadcastId'";
-    $sql = "SELECT b.*, u.username AS uploader, u.picture AS uploader_pic FROM `broadcasts` AS b, `users` AS u WHERE u.username = b.username AND broadcast = '$broadcastId'";
+
+    // $sqlo = "SELECT t.tag  FROM `tags` AS t WHERE  t.tag = '$broadcastId'";
+    $sql = "SELECT b.*, u.picture AS uploader_pic FROM `broadcasts` AS b, `users` AS u WHERE u.username = b.username AND broadcast = '$broadcastId'";
     
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-      $row = $result->fetch_assoc();
-      if($row['isOffline']){
-        $src = "https://simx.s3-us-west-2.amazonaws.com/offlineVideos/$row[broadcast].mp4";
+      $rows = $result->fetch_assoc();
+
+      
+      
+
+      if($rows['isOffline']){
+        $src = "https://simx.s3-us-west-2.amazonaws.com/offlineVideos/$rows[broadcast].mp4";
       }else{
-        $src = "https://simx.s3-us-west-2.amazonaws.com/recordedvideos/$row[broadcast].mp4";
+        $src = "https://simx.s3-us-west-2.amazonaws.com/recordedvideos/$rows[broadcast].mp4";
       }
-      echo '
-      <div class="col-8">
-              <video class="video-js" controls width="1000" height="450" autoplay loop>
-                  <source src="'.$src.'"
-                      type="video/mp4" />
-                  <p class="vjs-no-js">
-                      To view this video please enable JavaScript, and consider
-                      upgrading to a web browser that
-                      <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-                  </p>
-              </video>
-              <div class="row">
-            <div class="col-12"><h3 >'.$row["title"].'</h3></div>
-          </div>
-          <div class="row">
-            <div class="col-12"> '.$row["viewers"].' views . Upload Date: ' .explode(" ", $row["time"])[0].' </div>
-          </div>
-          <div class="row mt-3">
-        <div class="col-1">
-          <img
-            src="http://www.simx.tv/picture/Photos/'.$row["uploader_pic"].'.png"
-            alt="Avatar"
-            class="avatar"
-          />
+      ?>
+            <div class="col-8">
+                <?php 
+              
+              $bid = $rows['id'];
+
+      $b = $rows['broadcast'];
+
+      $un = $_SESSION["username"]; 
+              
+              ?>
+                <?php echo '
+                <video class="video-js" controls width="1000" height="450" autoplay loop>
+                    <source src="'.$src.'" type="video/mp4" />
+                    <p class="vjs-no-js">
+                        To view this video please enable JavaScript, and consider
+                        upgrading to a web browser that
+                        <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+                    </p>
+                </video>
+                ';
+                ?>
+                <div style="padding-left:1%; padding-top:1%;">
+
+                    <?php 
+                  $conn = new mysqli("localhost", "root", "", "simx");
+                  if ($conn->connect_error) {
+                  die("Connection failed: " . $conn->connect_error);
+                  }
+                   $broadcastId = $_GET['id'];
+                    $sqlo = "SELECT t.tag AS tag FROM `tags` AS t WHERE  t.broadcast ='$broadcastId'";
+                    $results = $conn->query($sqlo);
+
+                    if ($results->num_rows > 0) {
+                      while($row = $results->fetch_assoc()){
+                      echo '<span style="color:blue;"> #'.$row["tag"].'</span>';
+                      }
+                    }
+                    ?>
+
+                </div>
+
+
+                <div class="row">
+                    <div class="col-8">
+                        <?php  echo' <h3>'.$rows["title"].'</h3>' ?>
+                    </div>
+                    <div style="padding-left:10%;" class="col-4 send-btn-for-upload ">
+
+                        <?php 
+                      if($rows["isJob"] == 1){
+                        echo'
+                        <button id="sendCv" class="btn btn-info btn-lg" style="background-color: red">
+                            <span><span class="glyphicon glyphicon-send"></span> &nbsp; &nbsp;Apply For Job</span>
+                        </button>';
+
+                      }
+                    ?>
+
+
+
+                    </div>
+                </div>
+                <div class="row">
+                    <?php echo '<div class="col-12"> '.$rows["viewers"].' views . Upload Date: ' .explode(" ", $rows["time"])[0].'
+                    </div>'?>
+                </div>
+                <div class="row mt-3">
+                    <?php echo '
+                    <div class="col-1">
+                        <img src="http://www.simx.tv/picture/Photos/'.$rows["uploader_pic"].'.png" alt="Avatar"
+                        class="avatar" /> '?>
+                </div>
+                <div class="col-11 pl-0">
+                    <?php echo '<p class="pt-2" style="font-weight: bold; font-size: 15px;">'.$rows["name"].'</p>'?>
+                </div>
+            </div>
         </div>
-        <div class="col-11 pl-0">
-          <p class="pt-2" style="font-weight: bold; font-size: 15px;">
-          '.$row["name"].'
-          </p>
-        </div>
-      </div>
-          </div>
-          
-      ';
+
+        <?php
     }else {
       echo "0 results";
     }
         
-    ?>
+  ?>
 
 
-            <div class="col-4">
-                <?php 
+        <div class="col-4">
+            <?php 
     $conn = new mysqli("localhost", "root", "", "simx");
     if ($conn->connect_error) {
       die("Connection failed: " . $conn->connect_error);
@@ -175,9 +236,10 @@ if ($result->num_rows > 0) {
       // output data of each row
       while($row = $result->fetch_assoc()) {
         echo '
-      <div class="row mt-5">
+        <a style="text-decoration: none;  color: black;" href="broadcast.php?id='.$row["imglink"].'">
+      <div class="row mt-5 ">
         <div class="col-5">
-          <div style="background-color: black;">
+          <div style="background-color: black; height:140px;">
             <img class="thambnail"
             src="http://www.simx.tv/picture/Photos/'.$row["imglink"].'.png" />
           </div>
@@ -201,6 +263,7 @@ if ($result->num_rows > 0) {
           </div>
         </div>
       </div>
+      </a>
     
       ';
       }
@@ -209,21 +272,46 @@ if ($result->num_rows > 0) {
     }
 
     ?>
-            </div>
-            <script>
-            function openNav() {
-                document.getElementById("mySidenav").style.width = "250px";
-            }
+        </div>
+        <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
 
-            function closeNav() {
-                document.getElementById("mySidenav").style.width = "0";
-            }
-            </script>
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+        </script>
 
-            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-            <script src="js/bootstrap.min.js"></script>
-            <!-- <script src="//vjs.zencdn.net/5.4.6/video.min.js"></script> -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script>
+        $("#sendCv").click(function() {
+
+            $('#sendCv').html('<div ><img src="30.gif" /></div>');
+            $.post("video.php", {
+                    username: "<?php echo $un; ?>",
+                    broadcast: "<?php echo $b; ?>",
+                    broadcastId: "<?php echo $bid; ?>"
+                },
+                function(data, status) {
+                    $('#sendCv').html(
+                        '<span><span class="glyphicon glyphicon-send"></span> &nbsp; &nbsp;Apply With Video</span>'
+                    );
+                    console.log("Data: " + data + "\nStatus: " + status);
+                    var myObj = JSON.parse(data);
+                    if (status == "success") {
+                        alert(myObj.message)
+                    } else {
+                        alert("somting went wrong")
+                    }
+                });
+        });
+        </script>
 </body>
 
 </html>

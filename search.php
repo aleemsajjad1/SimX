@@ -1,3 +1,10 @@
+<?php 
+session_start();
+if(!isset($_SESSION["username"])){
+  header("Location:logout.php"); 
+}
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -16,7 +23,6 @@
 <body>
 
     <?php 
-  session_start();
   $conn = new mysqli("localhost", "root", "", "simx");
     if ($conn->connect_error) {
       die("Connection failed: " . $conn->connect_error);
@@ -44,7 +50,7 @@ if ($result->num_rows > 0) {
             <span style="font-size: 30px; cursor: pointer;" onclick="openNav()"
               >&#9776;</span
             >
-            <img src="simx.png" />
+            <a href="index.php"><img src="simx.png" /></a>
           </div>
         </div>
         <div class="col-lg-5 pt-2">
@@ -72,13 +78,14 @@ if ($result->num_rows > 0) {
             alt="Avatar"
             class="avatar"
           />
-          <button
+          <a
             style="background-color: #005585;"
             type="button"
             class="btn btn-info"
+            href="logout.php"
           >
             LogOut
-          </button>
+          </a>
         </div>
       </div>
     </div>
@@ -106,14 +113,14 @@ if ($result->num_rows > 0) {
       while($row = $result->fetch_assoc()) {
         echo '
         <a style="text-decoration: none;  color: black;" href="broadcast.php?id='.$row["imglink"].'">
-      <div id="multidiv" class="pl-5 pr-5 pt-5" style="width: 24.9%;  float:left">
+      <div id="multidiv" class=" pr-3 pt-5" style="width: 24.9%; display:inline-grid; margin-left:-1%; padding-left:40px;">
       
         <div style="background-color: black; height:280px;">
         <img
           class="video"
           src="http://www.simx.tv/picture/Photos/'.$row["imglink"].'.png"
         />
-      </div>
+        </div>
       
 
       <div class="row mt-3">

@@ -27,11 +27,9 @@ body {
 }
 
 .thambnail {
-  height: 120px !important;
+  height: 140px !important;
   margin-left: 30%;
 }
-
-
 
 .sidenav a {
   padding: 8px 8px 8px 32px;
@@ -40,6 +38,10 @@ body {
   color: white;
   display: block;
   transition: 0.3s;
+}
+.send-btn-for-upload {
+  padding-top: 3%;
+  padding-left: 6%;
 }
 
 .sidenav a:hover {
