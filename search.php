@@ -105,7 +105,13 @@ if ($result->num_rows > 0) {
       die("Connection failed: " . $conn->connect_error);
     }
     $search = $_POST["name"];
-    $sql = "SELECT b.*, u.username AS uploader, u.picture AS uploader_pic FROM `broadcasts` AS b, `users` AS u WHERE u.username = b.username And b.title LIKE '%{$search}%'";
+    $search = explode(' ', $search);
+    $where = "b.title LIKE '%$search[0]%'";
+    for($i = 1; $i < count($search); $i++){
+      $where .= " or b.title LIKE '%".$search[$i]."%' ";
+    }
+    $sql = "SELECT b.*, u.username AS uploader, u.picture AS uploader_pic FROM `broadcasts` AS b, `users` AS u WHERE u.username = b.username And ($where)";
+ 
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {

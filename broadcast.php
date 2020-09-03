@@ -228,7 +228,7 @@ if ($result->num_rows > 0) {
       die("Connection failed: " . $conn->connect_error);
     }
     $broadcastId = $_GET['id'];
-    $sql = "SELECT * FROM `broadcasts` WHERE broadcast != '$broadcastId' ";
+    $sql = "SELECT * FROM `broadcasts` WHERE broadcast != '$broadcastId' LIMIT 10 ";
     // $sql = "SELECT b.*, u.username AS uploader, u.picture AS uploader_pic FROM `broadcasts` AS b, `users` AS u WHERE u.username = b.username";
     $result = $conn->query($sql);
 
